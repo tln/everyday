@@ -1,0 +1,19 @@
+{
+    "data": [
+        {
+            "what": "Track Food",
+            "freq": "M T W Th F",
+            "done": true
+        },
+        {
+            "what": "Exercise",
+            "freq": "M W F",
+            "done": false
+        },
+        {
+            "what": "Expenses",
+            "freq": "M W F",
+            "done": false
+        }
+    ]
+}

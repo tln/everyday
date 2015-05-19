@@ -13,7 +13,7 @@ This is a toy app, designed to be used in portrait mode on a phone
     npm install -g react-tools nodemon
     
     # In one window
-    jsx --watch src/ build/
+    jsx --watch src/ public/js/build/
     
     # In other window
     nodemon server/server.js

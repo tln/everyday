@@ -4,50 +4,16 @@ var AcheiveApp = React.createClass({
     return {data: []};
   },
   componentDidMount: function() {
-    $.ajax({
-      url: '/data/items.json',
-      dataType: 'json',
-      cache: false,
-      success: function(data) {
-        this.setState(data);
-      }.bind(this),
-      error: function(xhr, status, err) {
-        console.error('/data/items.json', status, err.toString());
-      }.bind(this)
-    });
-  },
-  handleDoneChange: function (what, done) {
-    for (var i = 0; i < this.state.data.length; i++) {
-      if (this.state.data[i].what === what) {
-        this.state.data[i].done = done;
-        console.log(this.state);
-        this.setState(this.state);
-        this.saveState();
-        return;
-      }
-    }
-    console.error("cannot update state: what not found", what);
-  },
-  saveState: function () {
-    $.ajax({
-        url: '/data/items.json',
-        dataType: 'json',
-        type: 'POST',
-        contentType: 'application/json',
-        data: JSON.stringify(this.state),
-        success: function(data) {
-          this.setState(data);
-        }.bind(this),
-        error: function(xhr, status, err) {
-          console.error('/data/items.json', status, err.toString());
-        }.bind(this)
-    });
+      Reactions.on('itemsChanged', function (e) {
+          this.setState({data: e.detail});
+      }.bind(this));
+      Store.items.load();
   },
   render: function() {
     return (
         <div>
             <Toolbar/>
-            <Sections data={this.state.data} onDoneChange={this.handleDoneChange} />
+            <Sections data={this.state.data} />
         </div>
     );
   }
@@ -77,10 +43,9 @@ var DaySelector = React.createClass({
 
 var Sections = React.createClass({
   render: function() {
-      var onDoneChange = this.props.onDoneChange;
       var sections = this.props.data.map(function (activity) {
         return (
-          <Section onDoneChange={onDoneChange} what={activity.what} freq={activity.freq} done={activity.done}>
+          <Section what={activity.what} freq={activity.freq} done={activity.done}>
           </Section>
         );
       });
@@ -93,8 +58,9 @@ var Sections = React.createClass({
 });
 
 var Section = React.createClass({
+    mixins: [Reactions.mixin],
     handleClick: function () {
-      this.props.onDoneChange(this.props.what, !this.props.done);
+      this.trigger('itemDone', {what: this.props.what, done: !this.props.done});
     },
     render: function() {
         var buttonClass = this.props.done ? "done" : "not-done";
